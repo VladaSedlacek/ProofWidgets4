@@ -18,9 +18,11 @@ open ProofWidgets
 class IncidenceGeometry where
   Point : Type u₁
   Line : Type u₂
+  Circle : Type u₃
 
   between : Point → Point → Point → Prop -- implies colinearity
   onLine : Point → Line → Prop
+  onCircle : Point → Circle → Prop
   ne_23_of_between : ∀ {a b c : Point}, between a b c → b ≠ c
   line_unique_of_pts : ∀ {a b : Point}, ∀ {L M : Line}, a ≠ b → onLine a L → onLine b L → onLine a M → onLine b M → L = M
   onLine_2_of_between : ∀ {a b c : Point}, ∀ {L : Line}, between a b c → onLine a L → onLine c L → onLine b L
@@ -39,6 +41,11 @@ def isOnLinePred? (e : Expr) : Option (Expr × Expr) := do
 def isBetweenPred? (e : Expr) : Option (Expr × Expr × Expr) := do
   let some (_, a, b, c) := e.app4? ``between | none
   return (a, b, c)
+
+/-- If `e == onCircle a C` return `some (a, C)`, otherwise `none`. -/
+def isOnCirclePred? (e : Expr) : Option (Expr × Expr) := do
+  let some (_, a, C) := e.app3? ``onCircle | none
+  return (a, C)
 
 /-- Expressions to display as labels in a diagram. -/
 abbrev ExprEmbeds := Array (String × Expr)
@@ -59,6 +66,8 @@ def isEuclideanGoal? (hyps : Array LocalDecl) : MetaM (Option Html) := do
   let mut sets : HashMap String Expr := .empty
   for assm in hyps do
     let tp ← instantiateMVars assm.type
+
+      -- capture onLine hypotheses
     if let some (a, L) := isOnLinePred? tp then
       let sa ← toString <$> Lean.Meta.ppExpr a
       let sL ← toString <$> Lean.Meta.ppExpr L
@@ -70,6 +79,8 @@ def isEuclideanGoal? (hyps : Array LocalDecl) : MetaM (Option Html) := do
       if !cL then
         sub := sub ++ s!"Line {sL}\n"
       sub := sub ++ s!"On({sa}, {sL})\n"
+
+    -- capture between hypotheses
     if let some (a, b, c) := isBetweenPred? tp then
       let sa ← toString <$> Lean.Meta.ppExpr a
       let sb ← toString <$> Lean.Meta.ppExpr b
@@ -85,6 +96,20 @@ def isEuclideanGoal? (hyps : Array LocalDecl) : MetaM (Option Html) := do
       if !cc then
         sub := sub ++ s!"Point {sc}\n"
       sub := sub ++ s!"Between({sa}, {sb}, {sc})\n"
+
+    -- capture onCircle hypotheses
+    if let some (a, C) := isOnCirclePred? tp then
+      let sa ← toString <$> Lean.Meta.ppExpr a
+      let sC ← toString <$> Lean.Meta.ppExpr C
+      let (sets', ca) := sets.insert' sa a
+      let (sets', cC) := sets'.insert' sC C
+      sets := sets'
+      if !ca then
+        sub := sub ++ s!"Point {sa}\n"
+      if !cC then
+        sub := sub ++ s!"Circle {sC}\n"
+      sub := sub ++ s!"OnCircle({sa}, {sC})\n"
+
   if sets.isEmpty then return none
   some <$> mkEuclideanDiag sub sets.toArray
 
@@ -158,8 +183,8 @@ def EuclideanDisplayPanel : Component PanelWidgetProps where
 
 /-! # Example usage -/
 
-example {a b c : Point} {L M : Line} (Babc : between a b c) (aL : onLine a L) (bM : onLine b M)
-    (cL : onLine c L) (cM : onLine c M) : L = M := by
+example {a b c : Point} {L M : Line} {C : Circle} (Babc : between a b c) (aL : onLine a L) (bM : onLine b M)
+    (cL : onLine c L) (cM : onLine c M) (aC : onCircle a C): L = M := by
   with_panel_widgets [EuclideanDisplayPanel]
       -- Place your cursor here.
     have bc := ne_23_of_between Babc

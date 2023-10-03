@@ -21,6 +21,7 @@ const {
   repelWeight = 0.3
   pointRadius = 4.0
   minLineLength = 200.0
+  circleRadius = 100.0
 }
 
 
@@ -68,6 +69,33 @@ forall Line L {
   ensure disjoint(L.textBox, L.icon)
 }
 
+-- Circle
+forall Circle C {
+  C.radius = const.circleRadius
+  C.vec = (?, ?)
+
+  C.icon = Circle {
+    center : C.vec
+    r : C.radius
+    strokeWidth : const.strokeWidth
+    strokeColor : Colors.black
+    fillColor : Colors.none
+  }
+
+  C.textBox = Rectangle {
+    fillColor : Colors.none
+    cornerRadius : 5
+  }
+
+  ensure touching(C.icon, C.textBox)
+}
+
+-- Point on Circle
+forall Point p; Circle C
+where OnCircle(p, C) {
+  ensure equal(signedDistance(C.icon, p.vec), 0)
+  ensure disjoint(C.textBox, p.icon)
+}
 
 -- Point on Line
 forall Point p; Line L
@@ -101,4 +129,9 @@ forall Line L; Line M {
 forall Point p; Point q {
   ensure disjoint(p.textBox, q.textBox)
   encourage notTooClose(p.icon, q.icon, const.repelWeight)
+}
+
+forall Point p; Circle C {
+  ensure disjoint(p.textBox, C.textBox)
+  p.icon above C.icon
 }
