@@ -133,5 +133,11 @@ forall Point p; Point q {
 
 forall Point p; Circle C {
   ensure disjoint(p.textBox, C.textBox)
+  ensure disjoint(p.icon, C.textBox)
   p.icon above C.icon
+}
+
+forall Line L; Circle C {
+  ensure disjoint(L.textBox, C.textBox)
+  ensure disjoint(L.icon, C.textBox)
 }
