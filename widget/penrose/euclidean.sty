@@ -21,6 +21,7 @@ const {
   repelWeight = 0.3
   pointRadius = 4.0
   minLineLength = 200.0
+  maxLineLength = 300.0
   circleRadius = 100.0
 }
 
@@ -65,6 +66,7 @@ forall Line L {
   }
 
   ensure lessThan(const.minLineLength, norm(L.icon.start - L.icon.end))
+  ensure lessThan(norm(L.icon.start - L.icon.end), const.maxLineLength)
   ensure equal(signedDistance(L.textBox, L.icon.start), const.textPadding)
   ensure disjoint(L.textBox, L.icon)
 }
@@ -102,6 +104,8 @@ forall Point p; Line L
 where OnLine(p, L) {
   ensure equal(signedDistance(L.icon, p.vec), 0)
   ensure disjoint(L.textBox, p.icon)
+  encourage notTooClose(L.icon, p.icon, const.repelWeight)
+  encourage notTooClose(L.icon, p.icon, const.repelWeight)
 }
 
 
@@ -109,8 +113,6 @@ where OnLine(p, L) {
 forall Point p, q, r
 where Between(p, q, r) {
   ensure collinearOrdered(p.icon.center, q.icon.center, r.icon.center)
-  ensure inRange(q.icon.center[0], p.icon.center[0], r.icon.center[0])
-  ensure inRange(q.icon.center[1], p.icon.center[1], r.icon.center[1])
   encourage notTooClose(p.icon, q.icon, const.repelWeight)
   encourage notTooClose(q.icon, r.icon, const.repelWeight)
 }
