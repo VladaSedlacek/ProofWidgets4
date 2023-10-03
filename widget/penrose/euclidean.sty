@@ -99,7 +99,7 @@ where OnCircle(p, C) {
 
 -- Point on Line
 forall Point p; Line L
-where On(p, L) {
+where OnLine(p, L) {
   ensure equal(signedDistance(L.icon, p.vec), 0)
   ensure disjoint(L.textBox, p.icon)
 }

@@ -78,7 +78,7 @@ def isEuclideanGoal? (hyps : Array LocalDecl) : MetaM (Option Html) := do
         sub := sub ++ s!"Point {sa}\n"
       if !cL then
         sub := sub ++ s!"Line {sL}\n"
-      sub := sub ++ s!"On({sa}, {sL})\n"
+      sub := sub ++ s!"OnLine({sa}, {sL})\n"
 
     -- capture between hypotheses
     if let some (a, b, c) := isBetweenPred? tp then
