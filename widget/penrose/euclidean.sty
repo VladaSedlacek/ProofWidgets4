@@ -22,7 +22,8 @@ const {
   pointRadius = 4.0
   minLineLength = 200.0
   maxLineLength = 300.0
-  circleRadius = 100.0
+  minCircleRadius = 50.0
+  maxCircleRadius = 250.0
 }
 
 
@@ -90,6 +91,8 @@ forall Circle C {
   }
 
   ensure touching(C.icon, C.textBox)
+  encourage lessThan(const.minCircleRadius, C.radius)
+  encourage lessThan(C.radius, const.maxCircleRadius)
 }
 
 -- Point on Line
