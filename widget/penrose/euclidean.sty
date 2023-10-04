@@ -117,6 +117,14 @@ where OnCircle(p, C) {
   ensure disjoint(C.textBox, p.icon)
   }
 
+-- Point as Circle center
+forall Point p; Circle C
+where CenterCircle(p, C) {
+  ensure equal(C.center[0], p.vec[0])
+  ensure equal(C.center[1], p.vec[1])
+  ensure disjoint(C.textBox, p.icon)
+}
+
 -- Repelling
 forall Point p; Line L {
   ensure disjoint(p.textBox, L.textBox)

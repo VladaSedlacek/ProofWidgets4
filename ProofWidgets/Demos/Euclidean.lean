@@ -23,6 +23,7 @@ class IncidenceGeometry where
   between : Point → Point → Point → Prop -- implies colinearity
   onLine : Point → Line → Prop
   onCircle : Point → Circle → Prop
+  centerCircle : Point → Circle → Prop
   ne_23_of_between : ∀ {a b c : Point}, between a b c → b ≠ c
   line_unique_of_pts : ∀ {a b : Point}, ∀ {L M : Line}, a ≠ b → onLine a L → onLine b L → onLine a M → onLine b M → L = M
   onLine_2_of_between : ∀ {a b c : Point}, ∀ {L : Line}, between a b c → onLine a L → onLine c L → onLine b L
@@ -45,6 +46,11 @@ def isBetweenPred? (e : Expr) : Option (Expr × Expr × Expr) := do
 /-- If `e == onCircle a C` return `some (a, C)`, otherwise `none`. -/
 def isOnCirclePred? (e : Expr) : Option (Expr × Expr) := do
   let some (_, a, C) := e.app3? ``onCircle | none
+  return (a, C)
+
+/-- If `e == centerCircle a C` return `some (a, C)`, otherwise `none`. -/
+def isCenterCirclePred? (e : Expr) : Option (Expr × Expr) := do
+  let some (_, a, C) := e.app3? ``centerCircle | none
   return (a, C)
 
 /-- Expressions to display as labels in a diagram. -/
@@ -109,6 +115,19 @@ def isEuclideanGoal? (hyps : Array LocalDecl) : MetaM (Option Html) := do
       if !cC then
         sub := sub ++ s!"Circle {sC}\n"
       sub := sub ++ s!"OnCircle({sa}, {sC})\n"
+
+    -- capture centerCircle hypotheses
+    if let some (a, C) := isCenterCirclePred? tp then
+      let sa ← toString <$> Lean.Meta.ppExpr a
+      let sC ← toString <$> Lean.Meta.ppExpr C
+      let (sets', ca) := sets.insert' sa a
+      let (sets', cC) := sets'.insert' sC C
+      sets := sets'
+      if !ca then
+        sub := sub ++ s!"Point {sa}\n"
+      if !cC then
+        sub := sub ++ s!"Circle {sC}\n"
+      sub := sub ++ s!"CenterCircle({sa}, {sC})\n"
 
   if sets.isEmpty then return none
   some <$> mkEuclideanDiag sub sets.toArray
@@ -184,7 +203,7 @@ def EuclideanDisplayPanel : Component PanelWidgetProps where
 /-! # Example usage -/
 
 example {a b c : Point} {L M : Line} {C : Circle} (Babc : between a b c) (aL : onLine a L) (bM : onLine b M)
-    (cL : onLine c L) (cM : onLine c M) (aC : onCircle a C): L = M := by
+    (cL : onLine c L) (cM : onLine c M) (aC : onCircle a C) (bC : centerCircle b C): L = M := by
   with_panel_widgets [EuclideanDisplayPanel]
       -- Place your cursor here.
     have bc := ne_23_of_between Babc
