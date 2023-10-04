@@ -153,8 +153,13 @@ forall Point p; Circle C {
 forall Line L; Circle C {
   ensure disjoint(L.textBox, C.textBox)
   ensure disjoint(L.icon, C.textBox)
+  encourage notTooClose(L.textBox, C.textBox, const.repelWeight)
+  encourage notTooClose(L.icon, C.textBox, const.repelWeight)
 }
 
-forall Line C; Circle D {
+forall Circle C; Circle D {
   encourage notTooClose(C.textBox, D.textBox, const.repelWeight)
+  encourage notTooClose(C.textBox, D.icon, const.repelWeight)
+  encourage notTooClose(C.icon, D.icon, const.repelWeight)
+  ensure disjoint(C.textBox, D.icon)
 }
