@@ -74,10 +74,10 @@ forall Line L {
 -- Circle
 forall Circle C {
   C.radius = const.circleRadius
-  C.vec = (?, ?)
+  C.center = (?, ?)
 
   C.icon = Circle {
-    center : C.vec
+    center : C.center
     r : C.radius
     strokeWidth : const.strokeWidth
     strokeColor : Colors.black
@@ -90,13 +90,6 @@ forall Circle C {
   }
 
   ensure touching(C.icon, C.textBox)
-}
-
--- Point on Circle
-forall Point p; Circle C
-where OnCircle(p, C) {
-  ensure equal(signedDistance(C.icon, p.vec), 0)
-  ensure disjoint(C.textBox, p.icon)
 }
 
 -- Point on Line
@@ -117,6 +110,12 @@ where Between(p, q, r) {
   encourage notTooClose(q.icon, r.icon, const.repelWeight)
 }
 
+-- Point on Circle
+forall Point p; Circle C
+where OnCircle(p, C) {
+  ensure containsCirclePoint(C.center, C.radius, p.vec)
+  ensure disjoint(C.textBox, p.icon)
+  }
 
 -- Repelling
 forall Point p; Line L {
