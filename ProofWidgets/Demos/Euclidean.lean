@@ -202,8 +202,9 @@ def EuclideanDisplayPanel : Component PanelWidgetProps where
 
 /-! # Example usage -/
 
-example {a b c : Point} {L M : Line} {C D : Circle} (Babc : between a b c) (aL : onLine a L) (bM : onLine b M)
-    (cL : onLine c L) (cM : onLine c M) (aC : onCircle a C) (aD : onCircle a D) (bC : centerCircle b C): L = M := by
+example {a b c : Point} {L M : Line} {C D E: Circle} (Babc : between a b c)
+   (aL : onLine a L) (bM : onLine b M) (cL : onLine c L) (cM : onLine c M)
+   (aC : onCircle a C) (aD : onCircle a D) (bC : centerCircle b C) (cE : centerCircle c E): L = M := by
   with_panel_widgets [EuclideanDisplayPanel]
       -- Place your cursor here.
     have bc := ne_23_of_between Babc
