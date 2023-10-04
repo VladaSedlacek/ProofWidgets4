@@ -73,7 +73,7 @@ forall Line L {
 
 -- Circle
 forall Circle C {
-  C.radius = const.circleRadius
+  C.radius = ?
   C.center = (?, ?)
 
   C.icon = Circle {
@@ -113,7 +113,8 @@ where Between(p, q, r) {
 -- Point on Circle
 forall Point p; Circle C
 where OnCircle(p, C) {
-  ensure containsCirclePoint(C.center, C.radius, p.vec)
+  ensure equal(signedDistance(C.icon, p.vec), 0)
+  -- containsCirclePoint seems buggy for multiple circles
   ensure disjoint(C.textBox, p.icon)
   }
 
@@ -149,4 +150,8 @@ forall Point p; Circle C {
 forall Line L; Circle C {
   ensure disjoint(L.textBox, C.textBox)
   ensure disjoint(L.icon, C.textBox)
+}
+
+forall Line C; Circle D {
+  encourage notTooClose(C.textBox, D.textBox, const.repelWeight)
 }
