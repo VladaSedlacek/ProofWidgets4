@@ -34,9 +34,9 @@ forall Point p {
   p.icon = Circle {
     center: p.vec
     r : const.pointRadius
-    fillColor : Colors.white
+    fillColor : theme.foreground
     strokeWidth : const.strokeWidth
-    strokeColor : Colors.black
+    strokeColor : theme.tooltipBorder
   }
 
   p.textBox = Rectangle {
@@ -51,7 +51,7 @@ forall Point p {
 
 -- Line
 forall Line L {
-  L.color = Colors.black
+  L.color = theme.foreground
 
   L.icon = Line {
     start : (?, ?)
@@ -81,7 +81,7 @@ forall Circle C {
     center : C.center
     r : C.radius
     strokeWidth : const.strokeWidth
-    strokeColor : Colors.black
+    strokeColor : theme.foreground
     fillColor : Colors.none
   }
 
