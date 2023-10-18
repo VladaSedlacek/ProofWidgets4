@@ -151,10 +151,20 @@ open scoped Jsx in
 def getEuclideanGoal (ps : Params) : RequestM (RequestTask Response) := do
   RequestM.asTask do
     let html? ← ps.ci.val.runMetaM {} <| ps.mvar.withContext do
-      let locs : Array LocalDecl ← ps.locs.filterMapM fun
-        | .hyp fv => return some (← fv.getDecl)
-        | .hypType fv _ => return some (← fv.getDecl)
-        | _ => return none
+      -- Which hypotheses have been selected in the UI,
+      -- meaning they should *not* be shown in the display.
+      let mut hiddenLocs : HashSet FVarId := mkHashSet ps.locs.size
+      for l in ps.locs do
+        match l with
+        | .hyp fv | .hypType fv _ =>
+          hiddenLocs := hiddenLocs.insert fv
+        | _ => continue
+      -- Filter local declarations by whether they are not in `hiddenLocs`.
+      let locs := (← getLCtx).decls.toArray.filterMap (fun d? =>
+        if let some d := d? then
+          if !hiddenLocs.contains d.fvarId then some d else none
+        else
+          none)
       isEuclideanGoal? locs
     return { html? }
 
@@ -175,9 +185,13 @@ def EuclideanDisplayPanel : Component PanelWidgetProps where
     export default function(props) \{
       const rs = React.useContext(RpcContext)
       const st = useAsync(async () => \{
+        if (props.goals.length === 0)
+          return \{ html: \{ text: 'No goals' }}
+        let g = null
         if (props.selectedLocations.length === 0)
-          return \{ html: \{ text: 'Select hypotheses with shift-click.' } }
-        const g = findGoalForLocation(props.goals, props.selectedLocations[0])
+          g = props.goals[0]
+        else
+          g = findGoalForLocation(props.goals, props.selectedLocations[0])
         const locs = props.selectedLocations.map(loc => loc.loc)
         return rs.call('getEuclideanGoal', \{ ci: g.ctx, mvar: g.mvarId, locs })
       }, [props.selectedLocations, props.goals, rs])
