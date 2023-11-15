@@ -1,5 +1,6 @@
 -- inspired by https://github.com/penrose/penrose/blob/499cd21f39549abd317976f492b803a09ce2277d/packages/examples/src/geometry-domain/euclidean-teaser.style
 
+layout = [shape, label]
 
 Colors {
   -- Keenan palette
@@ -29,7 +30,7 @@ const {
 
 -- Point
 forall Point p {
-  p.vec = (?, ?)
+  p.vec = (? in shape, ? in shape)
 
   p.icon = Circle {
     center: p.vec
@@ -44,7 +45,7 @@ forall Point p {
     cornerRadius : 5
   }
 
-  ensure equal(signedDistance(p.textBox, p.vec), const.textPadding)
+  ensure equal(signedDistance(p.textBox, p.vec), const.textPadding) in label
   p.textLayering = p.textBox above p.icon
 }
 
@@ -54,8 +55,8 @@ forall Line L {
   L.color = theme.foreground
 
   L.icon = Line {
-    start : (?, ?)
-    end : (?, ?)
+    start : (? in shape, ? in shape)
+    end : (? in shape, ? in shape)
     strokeColor : L.color
     strokeWidth : const.strokeWidth
     style : "solid"
@@ -66,16 +67,16 @@ forall Line L {
     cornerRadius : 5
   }
 
-  ensure lessThan(const.minLineLength, norm(L.icon.start - L.icon.end))
-  ensure lessThan(norm(L.icon.start - L.icon.end), const.maxLineLength)
-  ensure equal(signedDistance(L.textBox, L.icon.start), const.textPadding)
-  ensure disjoint(L.textBox, L.icon)
+  ensure lessThan(const.minLineLength, norm(L.icon.start - L.icon.end)) in shape
+  ensure lessThan(norm(L.icon.start - L.icon.end), const.maxLineLength) in shape
+  ensure equal(signedDistance(L.textBox, L.icon.start), const.textPadding) in label
+  ensure disjoint(L.textBox, L.icon) in label
 }
 
 -- Circle
 forall Circle C {
-  C.radius = ?
-  C.center = (?, ?)
+  C.radius = ? in shape
+  C.center = (? in shape, ? in shape)
 
   C.icon = Circle {
     center : C.center
@@ -90,48 +91,45 @@ forall Circle C {
     cornerRadius : 5
   }
 
-  ensure touching(C.icon, C.textBox)
-  encourage lessThan(const.minCircleRadius, C.radius)
-  encourage lessThan(C.radius, const.maxCircleRadius)
+  ensure touching(C.icon, C.textBox) in label
+  encourage lessThan(const.minCircleRadius, C.radius) in shape
+  encourage lessThan(C.radius, const.maxCircleRadius) in shape
 }
 
 -- Point on Line
 forall Point p; Line L
 where OnLine(p, L) {
-  ensure equal(signedDistance(L.icon, p.vec), 0)
-  ensure disjoint(L.textBox, p.icon)
-  encourage notTooClose(L.icon, p.icon, const.repelWeight)
-  encourage notTooClose(L.icon, p.icon, const.repelWeight)
+  ensure containsPolyPoint([L.icon.start, L.icon.end], p.icon.center) in shape
 }
 
 
 -- Between
 forall Point p, q, r
 where Between(p, q, r) {
-  ensure collinearOrdered(p.icon.center, q.icon.center, r.icon.center)
-  encourage notTooClose(p.icon, q.icon, const.repelWeight)
-  encourage notTooClose(q.icon, r.icon, const.repelWeight)
+  ensure collinearOrdered(p.icon.center, q.icon.center, r.icon.center) in shape
+  encourage notTooClose(p.icon, q.icon, const.repelWeight) in label
+  encourage notTooClose(q.icon, r.icon, const.repelWeight) in label
 }
 
 -- Point on Circle
 forall Point p; Circle C
 where OnCircle(p, C) {
-  ensure equal(signedDistance(C.icon, p.vec), 0)
+  ensure equal(signedDistance(C.icon, p.vec), 0) in shape
   -- containsCirclePoint seems buggy for multiple circles
-  ensure disjoint(C.textBox, p.icon)
+  ensure disjoint(C.textBox, p.icon) in label
   }
 
 -- Point as Circle center
 forall Point p; Circle C
 where CenterCircle(p, C) {
-  ensure equal(C.center[0], p.vec[0])
-  ensure equal(C.center[1], p.vec[1])
-  ensure disjoint(C.textBox, p.icon)
+  ensure equal(C.center[0], p.vec[0]) in shape
+  ensure equal(C.center[1], p.vec[1]) in shape
+  ensure disjoint(C.textBox, p.icon) in label
 }
 
 -- Repelling
 forall Point p; Line L {
-  ensure disjoint(p.textBox, L.textBox)
+  ensure disjoint(p.textBox, L.textBox) in label
   p.icon above L.icon
 }
 
