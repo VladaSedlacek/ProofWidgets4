@@ -124,36 +124,38 @@ where CenterCircle(p, C) {
 }
 
 -- Repelling
-forall Point p; Line L {
-  ensure disjoint(p.textBox, L.textBox) in label
-  p.icon above L.icon
+forall Point p; Point q {
+  encourage notTooClose(p.icon, q.icon, const.repelWeight) in shape
+  ensure disjoint(p.textBox, q.textBox) in label
+  ensure disjoint(p.textBox, q.icon) in label
 }
 
 forall Line L; Line M {
-  ensure disjoint(L.textBox, M.textBox)
+  ensure disjoint(L.textBox, M.textBox) in label
+  ensure disjoint(L.textBox, M.icon) in label
 }
 
-forall Point p; Point q {
-  ensure disjoint(p.textBox, q.textBox)
-  encourage notTooClose(p.icon, q.icon, const.repelWeight)
+forall Circle C; Circle D {
+  ensure disjoint(C.textBox, D.textBox) in label
+  ensure disjoint(C.textBox, D.icon) in label
+}
+
+forall Point p; Line L {
+  ensure disjoint(p.textBox, L.textBox) in label
+  ensure disjoint(p.textBox, L.icon) in label
+  ensure disjoint(p.icon, L.textBox) in label
+  p.icon above L.icon
 }
 
 forall Point p; Circle C {
-  ensure disjoint(p.textBox, C.textBox)
-  ensure disjoint(p.icon, C.textBox)
+  ensure disjoint(p.textBox, C.textBox) in label
+  ensure disjoint(p.textBox, C.icon) in label
+  ensure disjoint(p.icon, C.textBox) in label
   p.icon above C.icon
 }
 
 forall Line L; Circle C {
-  ensure disjoint(L.textBox, C.textBox)
-  ensure disjoint(L.icon, C.textBox)
-  encourage notTooClose(L.textBox, C.textBox, const.repelWeight)
-  encourage notTooClose(L.icon, C.textBox, const.repelWeight)
-}
-
-forall Circle C; Circle D {
-  encourage notTooClose(C.textBox, D.textBox, const.repelWeight)
-  encourage notTooClose(C.textBox, D.icon, const.repelWeight)
-  encourage notTooClose(C.icon, D.icon, const.repelWeight)
-  ensure disjoint(C.textBox, D.icon)
+  ensure disjoint(L.textBox, C.textBox) in label
+  ensure disjoint(L.textBox, C.icon) in label
+  ensure disjoint(L.icon, C.textBox) in label
 }
