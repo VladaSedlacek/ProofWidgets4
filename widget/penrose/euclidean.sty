@@ -43,8 +43,7 @@ forall Point p {
     cornerRadius : 5
   }
 
-  ensure equal(signedDistance(p.textBox, p.vec), const.textPadding) in label
-  p.textLayering = p.textBox above p.icon
+  ensure signedDistance(p.textBox, p.vec) == const.textPadding in label
 }
 
 
@@ -65,9 +64,9 @@ forall Line L {
     cornerRadius : 5
   }
 
-  ensure equal(signedDistance(L.textBox, L.icon.start), const.textPadding) in label
-  ensure disjoint(L.textBox, L.icon) in label
+  ensure touching(L.textBox, L.icon) in label
 }
+
 
 -- Circle
 forall Circle C {
@@ -83,61 +82,64 @@ forall Circle C {
   }
 
   C.textBox = Rectangle {
-    fillColor : Colors.none
-    cornerRadius : 5
+    fillColor : Colors.white
+    cornerRadius : 100
   }
 
-  ensure touching(C.icon, C.textBox) in label
+  ensure touching(C.textBox, C.icon) in label
   encourage lessThan(const.minCircleRadius, C.radius) in shape
   encourage lessThan(C.radius, const.maxCircleRadius) in shape
 }
 
+
 -- Point on Line
 forall Point p; Line L
 where OnLine(p, L) {
-  ensure containsPolyPoint([L.icon.start, L.icon.end], p.icon.center) in shape
+  ensure containsPolyPoint([L.icon.start, L.icon.end], p.vec) in shape
+  ensure signedDistance(L.icon, p.vec) == 0 in shape
 }
 
 
 -- Between
 forall Point p, q, r
 where Between(p, q, r) {
-  ensure collinearOrdered(p.icon.center, q.icon.center, r.icon.center) in shape
-  encourage notTooClose(p.icon, q.icon, const.repelWeight) in label
-  encourage notTooClose(q.icon, r.icon, const.repelWeight) in label
+  ensure collinearOrdered(p.vec, q.vec, r.vec) in shape
 }
 
 -- Point on Circle
 forall Point p; Circle C
 where OnCircle(p, C) {
-  ensure equal(signedDistance(C.icon, p.vec), 0) in shape
+  ensure signedDistance(C.icon, p.vec) == 0 in shape
   -- containsCirclePoint seems buggy for multiple circles
-  ensure disjoint(C.textBox, p.icon) in label
   }
+
 
 -- Point as Circle center
 forall Point p; Circle C
 where CenterCircle(p, C) {
   ensure equal(C.center[0], p.vec[0]) in shape
   ensure equal(C.center[1], p.vec[1]) in shape
-  ensure disjoint(C.textBox, p.icon) in label
 }
+
 
 -- Repelling
 forall Point p; Point q {
   encourage notTooClose(p.icon, q.icon, const.repelWeight) in shape
   ensure disjoint(p.textBox, q.textBox) in label
   ensure disjoint(p.textBox, q.icon) in label
+  ensure disjoint(p.icon, q.textBox) in label
 }
 
 forall Line L; Line M {
   ensure disjoint(L.textBox, M.textBox) in label
   ensure disjoint(L.textBox, M.icon) in label
+  ensure disjoint(L.icon, M.textBox) in label
 }
 
 forall Circle C; Circle D {
   ensure disjoint(C.textBox, D.textBox) in label
   ensure disjoint(C.textBox, D.icon) in label
+  ensure disjoint(C.icon, D.textBox) in label
 }
 
 forall Point p; Line L {
@@ -149,9 +151,10 @@ forall Point p; Line L {
 
 forall Point p; Circle C {
   ensure disjoint(p.textBox, C.textBox) in label
-  ensure disjoint(p.textBox, C.icon) in label
+  encourage notTooClose(p.textBox, C.icon, const.repelWeight) in label
   ensure disjoint(p.icon, C.textBox) in label
   p.icon above C.icon
+  p.textBox above C.icon
 }
 
 forall Line L; Circle C {
