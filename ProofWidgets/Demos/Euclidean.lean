@@ -221,6 +221,10 @@ example {a b c : Point} {L M : Line} {C D E: Circle} (Babc : between a b c)
    (aC : onCircle a C) (aD : onCircle a D) (bC : centerCircle b C) (cE : centerCircle c E): L = M := by
   with_panel_widgets [EuclideanDisplayPanel]
       -- Place your cursor here.
+    have aC : onCircle a C := by sorry
+    have aD : onCircle a D := by sorry
+    have bC : centerCircle b C := by sorry
+    have cE : centerCircle c E := by sorry
     have bc := ne_23_of_between Babc
     have bL := onLine_2_of_between Babc aL cL
     exact line_unique_of_pts bc bL cL bM cM
