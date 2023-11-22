@@ -96,10 +96,8 @@ forall Circle C {
 -- Point on Line
 forall Point p; Line L
 where OnLine(p, L) {
-  ensure containsPolyPoint([L.icon.start, L.icon.end], p.vec) in shape
   ensure signedDistance(L.icon, p.vec) == 0 in shape
 }
-
 
 -- Between
 forall Point p, q, r
@@ -110,8 +108,7 @@ where Between(p, q, r) {
 -- Point on Circle
 forall Point p; Circle C
 where OnCircle(p, C) {
-  ensure signedDistance(C.icon, p.vec) == 0 in shape
-  -- containsCirclePoint seems buggy for multiple circles
+  ensure norm(C.center - p.vec) == C.radius in shape
   }
 
 
