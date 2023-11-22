@@ -19,6 +19,7 @@ Colors {
 const {
   strokeWidth = 1.75
   textPadding = 0.1
+  labelOffset = 15
   repelWeight = 0.3
   pointRadius = 4.0
   minCircleRadius = 50.0
@@ -43,7 +44,7 @@ forall Point p {
     cornerRadius : 5
   }
 
-  ensure signedDistance(p.textBox, p.vec) == const.textPadding in label
+  ensure signedDistance(p.textBox, p.vec) == const.textPadding - const.labelOffset in label
 }
 
 
@@ -82,8 +83,8 @@ forall Circle C {
   }
 
   C.textBox = Rectangle {
-    fillColor : Colors.white
-    cornerRadius : 100
+    fillColor : Colors.none
+    cornerRadius : 5
   }
 
   ensure touching(C.textBox, C.icon) in label
@@ -159,6 +160,6 @@ forall Point p; Circle C {
 
 forall Line L; Circle C {
   ensure disjoint(L.textBox, C.textBox) in label
-  ensure disjoint(L.textBox, C.icon) in label
+  encourage notTooClose(L.textBox, C.icon, const.repelWeight) in label
   ensure disjoint(L.icon, C.textBox) in label
 }
