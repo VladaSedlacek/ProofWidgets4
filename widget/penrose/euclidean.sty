@@ -99,6 +99,43 @@ where OnLine(p, L) {
   ensure signedDistance(L.icon, p.vec) == 0 in shape
 }
 
+-- Line uniqueness
+forall Point p; Point q; Line L; Line M
+where OnLine(p, L); OnLine(p, M); OnLine(q, L); OnLine(q, M) {
+  ensure L.icon.start[0] == M.icon.start[0] in shape
+  ensure L.icon.start[1] == M.icon.start[1] in shape
+  ensure L.icon.end[0] == M.icon.end[0] in shape
+  ensure L.icon.end[1] == M.icon.end[1] in shape
+}
+
+-- Line uniqueness v1
+forall Point p; Point q; Point r; Line L; Line M
+where Between(p, q, r); OnLine(p, L); OnLine(q, M); OnLine(r, L); OnLine(r, M) {
+  ensure L.icon.start[0] == M.icon.start[0] in shape
+  ensure L.icon.start[1] == M.icon.start[1] in shape
+  ensure L.icon.end[0] == M.icon.end[0] in shape
+  ensure L.icon.end[1] == M.icon.end[1] in shape
+}
+
+-- Line uniqueness v2
+forall Point p; Point q; Point r; Line L; Line M
+where Between(p, r, q); OnLine(p, L); OnLine(q, M); OnLine(r, L); OnLine(r, M) {
+  ensure L.icon.start[0] == M.icon.start[0] in shape
+  ensure L.icon.start[1] == M.icon.start[1] in shape
+  ensure L.icon.end[0] == M.icon.end[0] in shape
+  ensure L.icon.end[1] == M.icon.end[1] in shape
+}
+
+-- Line uniqueness v3
+forall Point p; Point q; Point r; Line L; Line M
+where Between(r, p, q); OnLine(p, L); OnLine(q, M); OnLine(r, L); OnLine(r, M) {
+  ensure L.icon.start[0] == M.icon.start[0] in shape
+  ensure L.icon.start[1] == M.icon.start[1] in shape
+  ensure L.icon.end[0] == M.icon.end[0] in shape
+  ensure L.icon.end[1] == M.icon.end[1] in shape
+}
+
+
 -- Between
 forall Point p, q, r
 where Between(p, q, r) {
