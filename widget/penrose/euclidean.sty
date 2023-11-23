@@ -24,6 +24,7 @@ const {
   pointRadius = 4.0
   minCircleRadius = 50.0
   maxCircleRadius = 250.0
+  lineOffset = 10.0
 }
 
 
@@ -181,6 +182,8 @@ forall Point p; Line L {
   ensure disjoint(p.textBox, L.textBox) in label
   ensure disjoint(p.textBox, L.icon) in label
   ensure disjoint(p.icon, L.textBox) in label
+  encourage greaterThan(norm(p.vec- L.icon.start), const.lineOffset) in shape
+  encourage greaterThan(norm(p.vec- L.icon.end), const.lineOffset) in shape
   p.icon above L.icon
 }
 
