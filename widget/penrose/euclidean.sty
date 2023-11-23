@@ -89,8 +89,8 @@ forall Circle C {
   }
 
   ensure touching(C.textBox, C.icon) in label
-  encourage lessThan(const.minCircleRadius, C.radius) in shape
-  encourage lessThan(C.radius, const.maxCircleRadius) in shape
+  encourage const.minCircleRadius < C.radius in shape
+  encourage C.radius < const.maxCircleRadius in shape
 }
 
 
@@ -182,8 +182,8 @@ forall Point p; Line L {
   ensure disjoint(p.textBox, L.textBox) in label
   ensure disjoint(p.textBox, L.icon) in label
   ensure disjoint(p.icon, L.textBox) in label
-  encourage greaterThan(norm(p.vec- L.icon.start), const.lineOffset) in shape
-  encourage greaterThan(norm(p.vec- L.icon.end), const.lineOffset) in shape
+  encourage norm(p.vec- L.icon.start) > const.lineOffset in shape
+  encourage norm(p.vec- L.icon.end) > const.lineOffset in shape
   p.icon above L.icon
 }
 
