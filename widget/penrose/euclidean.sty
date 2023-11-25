@@ -46,6 +46,7 @@ forall Point p {
   }
 
   ensure signedDistance(p.textBox, p.vec) == const.textPadding - const.labelOffset in label
+  ensure disjoint(p.textBox, p.icon) in label
 }
 
 
@@ -189,7 +190,7 @@ forall Point p; Line L {
 
 forall Point p; Circle C {
   ensure disjoint(p.textBox, C.textBox) in label
-  encourage notTooClose(p.textBox, C.icon, const.repelWeight) in label
+  --encourage notTooClose(p.textBox, C.icon, 0.01) in label
   ensure disjoint(p.icon, C.textBox) in label
   p.icon above C.icon
   p.textBox above C.icon
